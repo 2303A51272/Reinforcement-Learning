@@ -1,0 +1,117 @@
+# Assignment 1: Bellman Expectation Equations
+# Stochastic Policy and Deterministic Environment
+
+gamma = 0.9
+
+# Solve the simultaneous equations algebraically
+# V0 = -1 + 0.81 * V1
+# V1 = 89.9 + 0.09 * V0
+
+V1 = 89.81 / (1 - 0.0729)
+V0 = -1 + 0.81 * V1
+
+# Calculate action values
+Q_S0_Down = -1 + gamma * V1
+Q_S0_Right = -1 + gamma * 0
+
+Q_S1_Right = 100 + gamma * 0
+Q_S1_Up = -1 + gamma * V0
+
+# Display results
+print("Assignment 1: State and Action Values")
+print("-------------------------------------")
+
+print(f"V(S0)       = {V0:.2f}")
+print(f"V(S1)       = {V1:.2f}")
+
+print(f"Q(S0, Down) = {Q_S0_Down:.2f}")
+print(f"Q(S0, Right)= {Q_S0_Right:.2f}")
+print(f"Q(S1, Right)= {Q_S1_Right:.2f}")
+print(f"Q(S1, Up)   = {Q_S1_Up:.2f}")
+
+# Verify Bellman expectation equations
+V0_check = 0.9 * Q_S0_Down + 0.1 * Q_S0_Right
+V1_check = 0.9 * Q_S1_Right + 0.1 * Q_S1_Up
+
+print("\nVerification")
+print(f"V(S0) check = {V0_check:.2f}")
+print(f"V(S1) check = {V1_check:.2f}")
+
+# Assignment 2: Iterative Policy Evaluation
+# Deterministic Policy and Stochastic Environment
+
+gamma = 0.9
+theta = 0.000001
+
+# Initialize state values
+V0 = 0.0
+V1 = 0.0
+
+iterations = 0
+
+# Iterative policy evaluation
+while True:
+    # Use previous iteration's values
+    old_V0 = V0
+    old_V1 = V1
+
+    # Bellman expectation updates
+    new_V0 = (
+        0.1 * (-1 + gamma * 0)
+        + 0.9 * (-1 + gamma * old_V1)
+    )
+
+    new_V1 = (
+        0.9 * (100 + gamma * 0)
+        + 0.1 * (-1 + gamma * old_V0)
+    )
+
+    # Calculate maximum change
+    delta = max(
+        abs(new_V0 - old_V0),
+        abs(new_V1 - old_V1)
+    )
+
+    # Update values
+    V0 = new_V0
+    V1 = new_V1
+
+    iterations += 1
+
+    # Stop when converged
+    if delta < theta:
+        break
+
+# Calculate action values after convergence
+Q_S0_Down = (
+    0.1 * (-1 + gamma * 0)
+    + 0.9 * (-1 + gamma * V1)
+)
+
+Q_S0_Right = -1 + gamma * 0
+
+Q_S1_Right = (
+    0.9 * (100 + gamma * 0)
+    + 0.1 * (-1 + gamma * V0)
+)
+
+Q_S1_Up = -1 + gamma * V0
+
+# Display results
+print("Assignment 2: Iterative Policy Evaluation")
+print("-----------------------------------------")
+
+print("Iterations:", iterations)
+
+print(f"V(S0)       = {V0:.2f}")
+print(f"V(S1)       = {V1:.2f}")
+
+print(f"Q(S0, Down) = {Q_S0_Down:.2f}")
+print(f"Q(S0, Right)= {Q_S0_Right:.2f}")
+print(f"Q(S1, Right)= {Q_S1_Right:.2f}")
+print(f"Q(S1, Up)   = {Q_S1_Up:.2f}")
+
+# Verify policy consistency
+print("\nPolicy Consistency Checks")
+print(f"V(S0) = Q(S0, Down): {abs(V0 - Q_S0_Down) < theta}")
+print(f"V(S1) = Q(S1, Right): {abs(V1 - Q_S1_Right) < theta}")
